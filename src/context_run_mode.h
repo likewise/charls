@@ -41,6 +41,13 @@ public:
             n_test <<= 1;
             ASSERT(k <= 32);
         }
+        {
+            FILE *fh_log = fopen("t16e0_temp.log", "a");
+            ASSERT(fh_log != NULL);
+            fprintf(fh_log, "RItype=%2d, A=%2d, N=%2d, TEMP=%2d, k=%2d",
+                (int)run_interruption_type_, (int)a_, (int)n_, (int)temp, (int)k);
+            fclose(fh_log);
+        }
         return k;
     }
 
@@ -83,16 +90,23 @@ public:
     /// <summary>Code segment A.21 – Computation of map for Errval mapping.</summary>
     bool compute_map(const int32_t error_value, const int32_t k) const noexcept
     {
+        bool result = false;
         if (k == 0 && error_value > 0 && 2 * nn_ < n_)
-            return true;
+            result = true;
 
-        if (error_value < 0 && 2 * nn_ >= n_)
-            return true;
+        else if (error_value < 0 && 2 * nn_ >= n_)
+            result = true;
 
-        if (error_value < 0 && k != 0)
-            return true;
+        else if (error_value < 0 && k != 0)
+            result = true;
 
-        return false;
+        {
+            FILE *fh_log = fopen("t16e0_temp.log", "a");
+            ASSERT(fh_log != NULL);
+            fprintf(fh_log, ", errval=%5d, map=%1d\n", (int)error_value, (int)result);
+            fclose(fh_log);
+        }
+        return result;
     }
 
     FORCE_INLINE bool compute_map_negative_e(const int32_t k) const noexcept

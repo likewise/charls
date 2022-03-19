@@ -45,6 +45,8 @@ void jpeg_stream_writer::write_spiff_header_segment(const spiff_header& header)
 
     static constexpr array<uint8_t, 6> spiff_magic_id{'S', 'P', 'I', 'F', 'F', '\0'};
 
+    ASSERT(false);
+
     // Create a JPEG APP8 segment in Still Picture Interchange File Format (SPIFF), v2.0
     write_segment_header(jpeg_marker_code::application_data8, 30);
     write_bytes(spiff_magic_id.data(), spiff_magic_id.size());

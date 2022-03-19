@@ -267,6 +267,14 @@ private:
     {
         int32_t high_bits{mapped_error >> k};
 
+        {
+            FILE *fh_log = fopen("t16e0_maperr.log", "a");
+            ASSERT(fh_log != NULL);
+            fprintf(fh_log, "maperr=%5d, k=%2d, q=%2d, limit=%2d\n",
+                (int)mapped_error, (int)k, (int)high_bits, (int)limit);
+            fclose(fh_log);
+        }
+
         if (high_bits < limit - traits_.quantized_bits_per_pixel - 1)
         {
             if (high_bits + 1 > 31)
@@ -344,6 +352,13 @@ private:
 
         encode_mapped_value(k, map_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
                             traits_.limit);
+        {
+            FILE *fh_log;
+            fh_log = fopen("t16e0_context.log", "a");
+            ASSERT(fh_log != NULL);
+            fprintf(fh_log, "Q=%5d, ", apply_sign(qs, sign));
+            fclose(fh_log);
+        }
         context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
         ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
         return static_cast<sample_type>(
@@ -772,6 +787,13 @@ private:
                                            static_cast<int32_t>(map)};
 
         ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k));
+
+        {
+            FILE *fh_log = fopen("t16e0_maperr.log", "a");
+            ASSERT(fh_log != NULL);
+            fprintf(fh_log, "runjlen=%5d, ", J[run_index_] + 1);
+            fclose(fh_log);
+        }
         encode_mapped_value(k, e_mapped_error_value, traits_.limit - J[run_index_] - 1);
         context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
     }
@@ -847,6 +869,12 @@ private:
         }
         else
         {
+            {
+                FILE *fh_log = fopen("t16e0_maperr.log", "a");
+                ASSERT(fh_log != NULL);
+                fprintf(fh_log, "runcnt=%5d, ", run_length);
+                fclose(fh_log);
+            }
             Strategy::append_to_bit_stream(run_length, J[run_index_] + 1); // leading 0 + actual remaining length
         }
     }

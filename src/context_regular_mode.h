@@ -88,6 +88,13 @@ public:
                 ++c_;
             }
         }
+        {
+            FILE *logfile = fopen("t16e0_context.log", "a");
+            ASSERT(logfile != NULL);
+            fprintf(logfile, "Errval=%5d, A=%5d, B=%5d, C=%3d, N=%2d\n",
+                (int)error_value, (int)a_, (int)b_, (int)c_, (int)n_);
+            fclose(logfile);
+        }
     }
 
     /// <summary>
